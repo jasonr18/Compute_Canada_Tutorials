@@ -87,11 +87,11 @@ The steps for the three connections are the largely the same, and here I will ou
 * Open a terminal window 
 * then SSH into the Niagara login nodes with your Compute Canada credentials:
 ```shell
-ssh -i /path/to/ssh_private_key -Y MYALLIANCEUSERNAME@niagara.scinet.utoronto.ca
+ssh -i /path/to/ssh_private_key -Y username@niagara.scinet.utoronto.ca
 ```
 or 
 ```shell
- ssh -i /path/to/ssh_private_key -Y MYALLIANCEUSERNAME@niagara.computecanada.ca
+ ssh -i /path/to/ssh_private_key -Y username@niagara.computecanada.ca
 ```
 
 ## 1.3. File systems and transfer 
@@ -100,10 +100,10 @@ You have four kinds of directory on the Compute Canada clusters. Each cluster ha
 
 Their paths on the Nigara cluster are:
 ```
-$HOME=/home/g/groupname/myallianceusername
-$SCRATCH=/scratch/g/groupname/myallianceusername
-$PROJECT=/project/g/groupname/myallianceusername
-$ARCHIVE=/archive/g/groupname/myallianceusername
+$HOME=/home/g/groupname/username
+$SCRATCH=/scratch/g/groupname/username
+$PROJECT=/project/g/groupname/username
+$ARCHIVE=/archive/g/groupname/username
 ```
 
 ### 1.3.2. File transfer
@@ -258,10 +258,11 @@ module load julia
 julia MPC.jl
 ```
 
-Here is the whole procedure to submit the job:
+Here is the whole procedure to submit the job (```runjob.sh``` and ```MPC.jl``` should be in the same directory):
 ```shell
 module load julia
 # if you have you-own-Julia-modules, julia pre_load.jl
+cd /path-to-runjob.sh
 sbatch runjob.sh
 ```
 
