@@ -1,35 +1,35 @@
-# 1. A Complete Guide for using Compute Canada with Julia!
+# A Complete Guide for using Compute Canada with Julia!
+> This is a Julia version of Compute Canada tutorial. Thanks to the author of [Python version](https://prashp.gitlab.io/post/compute-canada-tut/#51-environment-variables-to-save-time). Here is the [markdown](https://github.com/jasonr18/Compute_Canada_Tutorials/blob/master/CC_getting_started.md#16-monitoring-jobs) and [pdf](https://github.com/jasonr18/Compute_Canada_Tutorials/blob/master/CC_getting_started.pdf) version.
+- [A Complete Guide for using Compute Canada with Julia!](#a-complete-guide-for-using-compute-canada-with-julia)
+  - [1. Introduction](#1-introduction)
+    - [1.1. Terminology](#11-terminology)
+    - [1.2. Useful Links](#12-useful-links)
+    - [1.3. Notes](#13-notes)
+  - [2. Setting up your environment](#2-setting-up-your-environment)
+    - [2.1. Getting a Compute Canada account](#21-getting-a-compute-canada-account)
+    - [2.2. SSH keys](#22-ssh-keys)
+    - [2.3. Logging into the systems](#23-logging-into-the-systems)
+  - [3. File systems and transfer](#3-file-systems-and-transfer)
+    - [3.1. File systems](#31-file-systems)
+    - [3.2. File transfer](#32-file-transfer)
+    - [3.3. Git for codes](#33-git-for-codes)
+  - [4. Software modules](#4-software-modules)
+    - [4.1. Loading software modules](#41-loading-software-modules)
+    - [4.2. Setting up Julia enviromnent](#42-setting-up-julia-enviromnent)
+  - [5. Submitting jobs](#5-submitting-jobs)
+    - [5.1. Basic rules](#51-basic-rules)
+    - [5.2. Job scripts](#52-job-scripts)
+    - [5.3. Interactive jobs](#53-interactive-jobs)
+    - [5.4. Demo](#54-demo)
+  - [6. Monitoring jobs](#6-monitoring-jobs)
 
-- [1. A Complete Guide for using Compute Canada with Julia!](#1-a-complete-guide-for-using-compute-canada-with-julia)
-  - [1.1. Introduction](#11-introduction)
-    - [1.1.1. Terminology](#111-terminology)
-    - [1.1.2. Useful Links](#112-useful-links)
-    - [1.1.3. Notes](#113-notes)
-  - [1.2. Setting up your environment](#12-setting-up-your-environment)
-    - [1.2.1. Getting a Compute Canada account](#121-getting-a-compute-canada-account)
-    - [1.2.2. SSH keys](#122-ssh-keys)
-    - [1.2.3. Logging into the systems](#123-logging-into-the-systems)
-  - [1.3. File systems and transfer](#13-file-systems-and-transfer)
-    - [1.3.1. File systems](#131-file-systems)
-    - [1.3.2. File transfer](#132-file-transfer)
-    - [1.3.3. Git for codes](#133-git-for-codes)
-  - [1.4. Software modules](#14-software-modules)
-    - [1.4.1. Loading software modules](#141-loading-software-modules)
-    - [1.4.2. Setting up Julia enviromnent](#142-setting-up-julia-enviromnent)
-  - [1.5. Submitting jobs](#15-submitting-jobs)
-    - [1.5.1. Basic rules](#151-basic-rules)
-    - [1.5.2. Job scripts](#152-job-scripts)
-    - [1.5.3. Interactive jobs](#153-interactive-jobs)
-    - [1.5.4. Demo](#154-demo)
-  - [1.6. Monitoring jobs](#16-monitoring-jobs)
 
-
-## 1.1. Introduction
+## 1. Introduction
 Compute Canada is Canada's national high-performance compute (HPC) system. The system gives users access to both storage and compute resources to make running large data analyses more efficient than on a standard desktop computer. Users can access Compute Canada from any computer with an active internet connection.
 
 The following information help users get start with Compute Canada by walking through the Niagara cluster (a homogeneous cluster, owned by the University of Toronto and operated by SciNet). We provide detailed examples with Julia, if you are using Python, please refer to [this Python version of tutorial](https://prashp.gitlab.io/post/compute-canada-tut/#51-environment-variables-to-save-time). 
 
-### 1.1.1. Terminology
+### 1.1. Terminology
 Throughout this Julia version of tutorial I will use the same terms with [this Python version of tutorial](https://prashp.gitlab.io/post/compute-canada-tut/#51-environment-variables-to-save-time). This section provides a brief explanation of these terms.
 
 * **Local**: This refers to anything that you own or have in your personal computer or file structure that is not on Compute Canada or any other computer outside of your personal network (whatever is inside your own home). For instance, your local machine is your personal MacBook, ThinkPad, etc that you use for your personal work, entertainment, etc. A local file is a file stored on your personal computer.
@@ -38,25 +38,25 @@ Throughout this Julia version of tutorial I will use the same terms with [this P
 * **Node**: A node refers to a computer within a cluster. You typically use one or more nodes when you submit or run a job on Compute Canada. You can specify how many CPUs and GPUs your job needs to access, and for how long, on each node.
 * **Shell / Terminal**: This refers to the program and interface running on your local computer or the remote node which lets you control the computer using only text-based commands. Using the shell/terminal is fundamental for using Compute Canada as you cannot control the node on Compute Canada using graphical or cursor-based interfaces as you normally would on your personal computer. It is a good idea to get familiar with using the terminal in general, and I hope this tutorial helps you get started on this journey. If you want to learn these skills in more depth, this is a great website which provides tutorials covering things like the shell, command-line environments: https://missing.csail.mit.edu/
 
-### 1.1.2. Useful Links
+### 1.2. Useful Links
 * Official Wiki
   * [https://docs.alliancecan.ca/wiki/Technical_documentation](https://docs.alliancecan.ca/wiki/Technical_documentation)
 * Official Guickstart
   * [Niagara](https://docs.scinet.utoronto.ca/index.php/Niagara_Quickstart)
 
-### 1.1.3. Notes
+### 1.3. Notes
 * All clusters of Compute Canada shares almost the same procedure except for small difference in batch job scripts. See [Links](https://docs.scinet.utoronto.ca/index.php/Running_Serial_Jobs_on_Niagara).
 * If there are any errors, please search the official wiki first, then refer to [technical support](https://docs.alliancecan.ca/wiki/Technical_support). 
 
-## 1.2. Setting up your environment
-### 1.2.1. Getting a Compute Canada account
+## 2. Setting up your environment
+### 2.1. Getting a Compute Canada account
 Before you begin, you will need to register for a Compute Canada (CC) account, which will allow you to log in to CC clusters. You need to sign up on [CCDB](https://ccdb.computecanada.ca/) , and you will need a supervisor (like your PhD supervisor) to sponsor your application. This process can take 2-5 days so it’s best to do this as soon as possible.
 
 If your supervisor does not have a CC account, they will first need to register using the same website. Once they have been approved you can apply for your own account. You will need to provide your supervisor’s CCDB ID, which is usually in the form `abc-123`. 
 
 Specially, while you can also compute on Niagara with your Default RAP, you need to request access to this cluster. Go to this [page](https://ccdb.computecanada.ca/services/opt_in), and click on “Join” next to Niagara and Mist. 
 
-### 1.2.2. SSH keys
+### 2.2. SSH keys
 Secure Shell (SSH) is a widely used standard to connect to remote servers in a secure way. SSH is the normal way for users to connect in order to execute commands, submit jobs, follow the progress of these jobs and in some cases, transfer files.
 
 There are three different connections for which you need to set up SSH keys:
@@ -83,7 +83,7 @@ The steps for the three connections are the largely the same, and here I will ou
   After clicking "Add Key" your SSH key will show up in the section below.
   ![](https://docs.alliancecan.ca/mediawiki/images/d/d9/Ccdb-keys-fig3.png)
 
-### 1.2.3. Logging into the systems
+### 2.3. Logging into the systems
 * Open a terminal window 
 * then SSH into the Niagara login nodes with your Compute Canada credentials:
 ```shell
@@ -94,8 +94,8 @@ or
  ssh -i /path/to/ssh_private_key -Y username@niagara.computecanada.ca
 ```
 
-## 1.3. File systems and transfer 
-### 1.3.1. File systems
+## 3. File systems and transfer 
+### 3.1. File systems
 You have four kinds of directory on the Compute Canada clusters. Each cluster has different sizes and rules for each kind of directory. Please refer to the wiki page of each cluster for more details. Generally speaking, you are recommended to use `Project` directory to develop your project. 
 
 Their paths on the Nigara cluster are:
@@ -106,7 +106,7 @@ $PROJECT=/project/g/groupname/username
 $ARCHIVE=/archive/g/groupname/username
 ```
 
-### 1.3.2. File transfer
+### 3.2. File transfer
 1. use scp to copy files directories
 ```shell
 scp file username@niagara.computecanada.ca:/path
@@ -114,13 +114,13 @@ scp username@niagara.computecanada.ca:/path/file localPath
 ```
 2. For windows, ```WinSCP``` can be used for file transfer
 
-### 1.3.3. Git for codes
+### 3.3. Git for codes
 The optimal way to ‘transfer’ codes such as Julia files, Jupyter notebooks, and generally any text-based files, is to use Github. You should commit and push changes from your local machine and then pull them on Compute Canada to ensure you have the latest version of your code (and vice-versa if you are editing on Compute Canada and want your local machine to have the latest version).
 
 Please refer to the tutorials from [Compute Canada](https://docs.alliancecan.ca/wiki/Git) and [Github](https://docs.github.com/en/get-started/quickstart/hello-world).
 
-## 1.4. Software modules 
-### 1.4.1. Loading software modules
+## 4. Software modules 
+### 4.1. Loading software modules
 You have two options for running code on Niagara: use existing software, or compile your own. 
 
 To use existing software, common module subcommands are:
@@ -133,7 +133,7 @@ To use existing software, common module subcommands are:
 
 To compile your own, please refer to the official wiki, such as [CPLEX](https://docs.alliancecan.ca/wiki/CPLEX/en), [Gurobi](https://docs.alliancecan.ca/wiki/Gurobi).
 
-### 1.4.2. Setting up Julia enviromnent 
+### 4.2. Setting up Julia enviromnent 
 Here is the typical steps to setup the Julia enviroment:
 ```shell
 module load julia
@@ -159,14 +159,14 @@ end
 using you-own-module1, you-own-module2, ...
 ```
 
-## 1.5. Submitting jobs
-### 1.5.1. Basic rules
+## 5. Submitting jobs
+### 5.1. Basic rules
 As described at the very beginning, Niagara is a cluster, which is a collection of nodes (computers) which are connected to each other. When you log into Niagara, you are logging into a ‘head’ node or a ‘log-in’ node. This node itself does not have the resources (memory, CPU, GPU) to run computations that are even a little demanding. It is not appropriate to run any computations on the log-in node, and this is actively discouraged. 
 
 There are several hundreds of compute nodes on which you are allowed to run jobs, however to do this you need to submit your program/script as a ‘job’. In addition to providing the command necessary to run your job (e.g. ```julia testing.jl```), you also need to provide details of what types of resources you need to use and for how long, so the scheduling system on Niagara can appropriately allocate resources for your script. 
 
 Niagara uses ```SLURM``` as its job scheduler. More-advanced details of how to interact with the scheduler can be found on the [Slurm page](https://docs.scinet.utoronto.ca/index.php/Slurm).
-### 1.5.2. Job scripts
+### 5.2. Job scripts
 Job scripts are terminal scripts (e.g. ```xxx.sh```) to describe the resourses you need for your job and the real running command. 
 ```shell
 #! /bin/bash
@@ -183,13 +183,13 @@ After creating the terminal script (e.g. ```xxx.sh```), type the following comma
 sbatch xxx.sh # submit the job
 ```
 
-### 1.5.3. Interactive jobs
+### 5.3. Interactive jobs
 Interactive jobs are also supported, and you can do data exploration, software development/debugging at the command line:
 ```shell 
 salloc --time=1:0:0 --nodes=1 --tasks-per-node=15 --mem-per-cpu=4gb
 ```
 
-### 1.5.4. Demo
+### 5.4. Demo
 Here is a demo of model predictive control problem in Julia, **please setup the Julia environment before running this demo**. 
 
 Here is the Julia file ```MPC.jl```:
@@ -266,7 +266,7 @@ cd /path-to-runjob.sh
 sbatch runjob.sh
 ```
 
-## 1.6. Monitoring jobs
+## 6. Monitoring jobs
 The most basic way to monitor your jobs is to use the ```squeue``` command. This will tell you whether your CC job has started or is queued, as well as how much time is left if it has started:
 ```shell
 squeue -u username # list all current jobs
