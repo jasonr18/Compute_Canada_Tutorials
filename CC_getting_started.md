@@ -186,7 +186,7 @@ sbatch xxx.sh # submit the job
 ### 5.3. Interactive jobs
 Interactive jobs are also supported, and you can do data exploration, software development/debugging at the command line:
 ```shell 
-salloc --time=1:0:0 --nodes=1 --tasks-per-node=15 --mem-per-cpu=4gb
+salloc --time=1:0:0 --nodes=1 --ntasks-per-node=15 --mem-per-cpu=4gb
 ```
 
 ### 5.4. Demo
@@ -248,17 +248,15 @@ Here is the job scripts ```runjob.sh```:
 ```shell
 #!/bin/bash
 #SBATCH --nodes=1
-#SBATCH –tasks-per-node=1
+#SBATCH --ntasks-per-node=1
 #SBATCH -t 0-01:00
-#SBATCH – output=%N-%j.out
-
-cd ${SLURM_SUBMIT-DIR}
+#SBATCH --output=%N-%j.out
 
 module load julia
 julia MPC.jl
 ```
 
-Here is the whole procedure to submit the job (```runjob.sh``` and ```MPC.jl``` should be in the same directory):
+Here is the whole procedure to submit the job (```runjob.sh``` and ```MPC.jl``` should be in the same directory), **please setup the Julia environment before running this demo**:
 ```shell
 module load julia
 # if you have you-own-Julia-modules, julia pre_load.jl
