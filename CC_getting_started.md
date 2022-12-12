@@ -93,6 +93,10 @@ or
 ```shell
  ssh -i /path/to/ssh_private_key -Y username@niagara.computecanada.ca
 ```
+* Example:
+```shell
+ssh -i C:\Users\username\.ssh\id_ed25519 -Y username@niagara.computecanada.ca
+```
 
 ## 3. File systems and transfer 
 ### 3.1. File systems
