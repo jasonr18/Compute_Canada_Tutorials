@@ -19,6 +19,8 @@
   - [5. Submitting jobs](#5-submitting-jobs)
     - [5.1. Basic rules](#51-basic-rules)
     - [5.2. Job scripts](#52-job-scripts)
+      - [Frequently used SLURM options](#frequently-used-slurm-options)
+      - [Example of job scripts](#example-of-job-scripts)
     - [5.3. Interactive jobs](#53-interactive-jobs)
     - [5.4. Demo](#54-demo)
   - [6. Monitoring jobs](#6-monitoring-jobs)
@@ -172,6 +174,20 @@ There are several hundreds of compute nodes on which you are allowed to run jobs
 Niagara uses ```SLURM``` as its job scheduler. More-advanced details of how to interact with the scheduler can be found on the [Slurm page](https://docs.scinet.utoronto.ca/index.php/Slurm).
 ### 5.2. Job scripts
 Job scripts are terminal scripts (e.g. ```xxx.sh```) to describe the resourses you need for your job and the real running command. 
+#### Frequently used SLURM options
+```shell
+#SBATCH --time=0-05:00 # walltime in d-hh:mm or hh:mm:ss format 
+#SBATCH --ntasks=X # request X tasks; with cpus-per-task=1 (the default) this requests X cores #SBATCH --nodes=X # request a minimum of X nodes 
+#SBATCH --nodes=X-Y # request a minimum of X nodes and a maximum of Y nodes 
+#SBATCH --cpus-per-task=X # request a minimum of X CPUs per task 
+#SBATCH --tasks-per-node=X # request a minimum of X tasks be allocated per node
+#SBATCH --output=name%j.out # standard output and error log 
+#SBATCH --error=name.err # standard error log 
+#SBATCH --mem=2000 # request 2000 MB of memory in total 
+#SBATCH --mem-per-cpu=2000 # request 2000 MB of memory per CPU #SBATCH --gres=gpu:1 # request 1 GPU per node 
+```
+
+#### Example of job scripts
 ```shell
 #! /bin/bash
 #SBATCH --nodes=1 # number of nodes request
@@ -180,7 +196,7 @@ Job scripts are terminal scripts (e.g. ```xxx.sh```) to describe the resourses y
 #SBATCH --output=%j-%N.out # the print of xxx.jl will be logged in this file, %N for node name, %j for job id
 
 Module load …
-julia xxx.jl
+julia xxx.jl > xxx.log # run xxx.jl and print the result in xxx.log
 ```
 After creating the terminal script (e.g. ```xxx.sh```), type the following command in the terminal:
 ```
@@ -196,7 +212,7 @@ salloc --time=1:0:0 --nodes=1 --ntasks-per-node=15 --mem-per-cpu=4gb
 ### 5.4. Demo
 Here is a demo of model predictive control problem in Julia, **please setup the Julia environment before running this demo**. 
 
-Here is the Julia file ```MPC.jl```:
+Here is the main Julia file ```MPC.jl```:
 ```Julia
 #import Pkg
 #Pkg.add("JuMP")
@@ -205,16 +221,13 @@ Here is the Julia file ```MPC.jl```:
 using JuMP
 using Ipopt
 
-N=3
-N_sim = 20
-alpha=1e-5
-
-function StepModel(x, u)
-    x1_plus = 2*x[1] + 1*x[2] + 1*u[1]
-    x2_plus = 0*x[1] + 2*x[2] + 1*u[2]
-    return [x1_plus, x2_plus]
+# user defined module
+if !("." in LOAD_PATH)
+    push!(LOAD_PATH, ".") # path to your-own-module
 end
+using process_model
 
+# optimal control
 function OptimalControl(x0)
     m=Model(Ipopt.Optimizer)
     @variable(m, x[i in 1:2, t in 0:(N)])
@@ -238,14 +251,63 @@ function OptimalControl(x0)
     return [JuMP.value(u[1,0]),JuMP.value(u[2,0])]
 end
 
+# main
+N=3
+N_sim = 30
+alpha=2
+
 x = zeros(Float64,2,N_sim+1)           
 u = zeros(Float64,2,N_sim)  
 x[:,1] = [0.5, 0.5]
 for t = 1:N_sim
+    println("##############################################")
+    println("Simulation time: ", t, " / ", N_sim, "")
     u[:,t] = OptimalControl(x[:,t])
     x[:,t+1] = StepModel(x[:,t], u[:,t])
+    println("x[:, ", t+1, "] = ", x[:,t+1], ", ", "u[:, ", t, "] = ", u[:,t])
+    if t == 15
+        x[:,t+1] += [0.5, 0.1]
+    end
+    sleep(3)
 end
+println("#####################final result#####################")
 println(u)
+
+# plot result
+using Plots
+l = @layout [a; b]
+p1 = plot(x[1,:], label="x 1")
+plot!(p1, x[2,:], label="x 2")
+p2 = plot(u[1,:], label="u 1")
+plot!(p2, u[2,:], label="u 2")
+plot(p1, p2, layout = l)
+savefig("result.png")
+```
+
+Here is the module ```process_model.jl```:
+```Julia 
+module process_model
+
+export StepModel
+
+function StepModel(x, u)
+    x1_plus = 2*x[1] + 1*x[2] + 1*u[1]
+    x2_plus = 0*x[1] + 2*x[2] + 1*u[2]
+    return [x1_plus, x2_plus]
+end
+
+end
+```
+
+Here is the precompiling file ```pre_load.jl```:
+```Julia
+# This is the file for precompiling self-created packages in niagara system
+
+if !("." in LOAD_PATH)
+    push!(LOAD_PATH, ".") # path to your-own-module
+end
+
+using process_model
 ```
 
 Here is the job scripts ```runjob.sh```:
@@ -257,10 +319,10 @@ Here is the job scripts ```runjob.sh```:
 #SBATCH --output=%N-%j.out
 
 module load julia
-julia MPC.jl
+julia MPC.jl > MPC.log
 ```
 
-Here is the whole procedure to submit the job (```runjob.sh``` and ```MPC.jl``` should be in the same directory), **please setup the Julia environment before running this demo**:
+Here is the whole procedure to submit the job, **please setup the Julia environment before running this demo**:
 ```shell
 module load julia
 # if you have you-own-Julia-modules, julia pre_load.jl
