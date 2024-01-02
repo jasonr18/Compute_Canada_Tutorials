@@ -319,7 +319,7 @@ Here is the job scripts ```runjob.sh```:
 #SBATCH --output=%N-%j.out
 
 module load julia
-julia MPC.jl > MPC.log
+julia MPC.jl > MPC_{$SLURM_NODEID}_{$SLURM_JOBID}.log
 ```
 
 Here is the whole procedure to submit the job, **please setup the Julia environment before running this demo**:

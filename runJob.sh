@@ -5,4 +5,4 @@
 #SBATCH --output=%N-%j.out
 
 module load julia
-julia MPC.jl > MPC.log
+julia MPC.jl > MPC_{$SLURM_NODEID}_{$SLURM_JOBID}.log
