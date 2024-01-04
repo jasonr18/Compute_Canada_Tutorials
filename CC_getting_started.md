@@ -24,6 +24,7 @@
     - [5.3. Interactive jobs](#53-interactive-jobs)
     - [5.4. Demo](#54-demo)
   - [6. Monitoring jobs](#6-monitoring-jobs)
+  - [7. Common commands](#7-common-commands)
 
 
 ## 1. Introduction
@@ -333,7 +334,22 @@ sbatch runjob.sh
 ## 6. Monitoring jobs
 The most basic way to monitor your jobs is to use the ```squeue``` command. This will tell you whether your CC job has started or is queued, as well as how much time is left if it has started:
 ```shell
-squeue -u username # list all current jobs
+squeue -u username # list all current jobs, also sq
 jobperf jobid # more detailed job infomation
 watch -d -n 15 'squeue -u username; jobperf jobid' # automated job monitoring command
+sacct # job history
 ```
+
+## 7. Common commands
+* The ```TAB``` Button # a very useful tool for completion for file names, commands… pwd # print the current working directory
+* ```ls``` # list directory contents (ls -l will list the contents in a long format and ls -a will show hidden files)
+* ```cd``` # change directory
+* ```touch``` # create an empty file or update a time stamp for an existing file
+* ```cp A B``` # copy a file from A to B
+* ```mv A B``` # move a file from A to B
+* ```rm``` # remove files
+* ```mkdir``` # make a new directory
+* ```rmdir``` # remove directory
+* ```chown sb. Filename``` # change ownership
+* ```chmod``` # change mode (4 – read, 2- write, 1 - execute)
+* ```vi/vim``` # text editor (In Command mode, press ```i``` will get you into Edit mode, type ```:q``` will quit, ```:wq``` will write and quit; in Edit mode, you can edit your file and press ```Esc``` button will return you to Command mode)
